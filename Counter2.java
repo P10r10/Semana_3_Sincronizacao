@@ -41,7 +41,7 @@ public class Counter2 {
 
     public static void main(String[] args) throws InterruptedException {
         for (int i = 0; i < 10; i++) { // tests 10 times
-            test(); // conclusion: 4000 is not always the result
+            test(); // conclusion: 4000 is always the result (after synchronized)
         }
     }
 }
