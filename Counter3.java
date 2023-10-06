@@ -1,12 +1,21 @@
-public class Counter2 { // example solving concurrency problems with "synchronized"
-    private int count;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-    public Counter2() {
+public class Counter3 { // example solving concurrency problems with lock
+    private int count;
+    private final Lock lock = new ReentrantLock();
+
+    public Counter3() {
         count = 0;
     }
 
-    public synchronized void increment() { // critical block addressed with "synchronized"
-        count++;
+    public void increment() { // critical block addressed with lock/unlock
+        try {
+            lock.lock();
+            count++;
+        } finally {
+            lock.unlock();
+        }
     }
     public int getCount() {
         return count;
@@ -24,7 +33,7 @@ public class Counter2 { // example solving concurrency problems with "synchroniz
 
     public static void test() throws InterruptedException {
         final int THREADS = 4; // decide the nb of threads
-        Counter2 sharedCounter = new Counter2();
+        Counter3 sharedCounter = new Counter3();
 
         ConcurrentCount[] threads = new ConcurrentCount[THREADS];
         for (int i = 0; i < THREADS; i++) {
@@ -41,7 +50,7 @@ public class Counter2 { // example solving concurrency problems with "synchroniz
 
     public static void main(String[] args) throws InterruptedException {
         for (int i = 0; i < 10; i++) { // tests 10 times
-            test(); // conclusion: 4000 is always the result (after synchronized)
+            test(); // conclusion: 4000 is always the result (after using lock)
         }
     }
 }

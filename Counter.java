@@ -1,4 +1,4 @@
-public class Counter {
+public class Counter { // example with concurrency problems
     private int count;
 
     public Counter() {
