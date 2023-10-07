@@ -1,11 +1,11 @@
-public class Queue { // not thread safe
+public class Queue2 { // thread safe - addressed with synchronized
     private final int MAX = 10000;
     private final int[] queue;
     private int head;
     private int tail;
     private int size;
 
-    public Queue() {
+    public Queue2() {
         queue = new int[MAX];
         head = 0;
         tail = -1;
@@ -27,7 +27,7 @@ public class Queue { // not thread safe
         return queue[head];
     }
 
-    public synchronized void  offer(int nb) {
+    public synchronized void  offer(int nb) { // added synchronized in this critical block
         if (size == MAX) {
             throw new IllegalStateException("Method offer: Queue is full!");
         }
@@ -36,7 +36,7 @@ public class Queue { // not thread safe
         queue[tail] = nb;
     }
 
-    public synchronized int poll() {
+    public synchronized int poll() { // added synchronized in this critical block
         if (empty()) {
             throw new IllegalStateException("Method poll: Queue is empty!");
         }
@@ -73,7 +73,7 @@ public class Queue { // not thread safe
 
     public static void main(String[] args) throws InterruptedException {
         final int THREADS = 6; // decide the nb of threads
-        Queue q = new Queue();
+        Queue2 q = new Queue2();
 
         ConcurrentQueue[] threads = new ConcurrentQueue[THREADS];
         for (int i = 0; i < THREADS; i++) {
@@ -86,6 +86,6 @@ public class Queue { // not thread safe
             threads[i].join();
         }
 
-        System.out.println(q.size); // size should be always 6000 but it isn't!
+        System.out.println(q.size); // size is now always 6000
     }
 }
