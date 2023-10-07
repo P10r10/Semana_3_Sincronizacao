@@ -1,5 +1,5 @@
 public class Queue {
-    private final int MAX = 5;
+    private final int MAX = 10000;
     private final int[] queue;
     private int head;
     private int tail;
@@ -14,6 +14,10 @@ public class Queue {
 
     public boolean empty() {
         return size == 0;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public int peek() {
@@ -51,8 +55,31 @@ public class Queue {
         }
     }
 
-    public static void main(String[] args) {
+    private class ConcurrentQueue extends Thread {
+
+        @Override
+        public void run() {
+            for (int i = 0; i < 1000; i++) { // 1000 offers
+                offer(i);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        final int THREADS = 6; // decide the nb of threads
         Queue q = new Queue();
 
+        ConcurrentQueue[] threads = new ConcurrentQueue[THREADS];
+        for (int i = 0; i < THREADS; i++) {
+            threads[i] = q.new ConcurrentQueue();
+        }
+        for (int i = 0; i < THREADS; i++) {
+            threads[i].start();
+        }
+        for (int i = 0; i < THREADS; i++) {
+            threads[i].join();
+        }
+
+        System.out.println(q.size);
     }
 }
