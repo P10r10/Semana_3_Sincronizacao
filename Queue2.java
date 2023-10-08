@@ -27,7 +27,7 @@ public class Queue2 { // thread safe - addressed with synchronized
         return queue[head];
     }
 
-    public synchronized void  offer(int nb) { // added synchronized in this critical block
+    public synchronized void offer(int nb) { // added synchronized in this critical block
         if (size == MAX) {
             throw new IllegalStateException("Method offer: Queue is full!");
         }

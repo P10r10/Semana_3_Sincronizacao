@@ -1,22 +1,24 @@
-public class Queue { // not thread safe
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Queue3 { // thread safe using atomicity
     private final int MAX = 10000;
     private final int[] queue;
-    private int head;
-    private int tail;
-    private int size;
+    private final AtomicInteger head;
+    private final AtomicInteger tail;
+    private final AtomicInteger size;
 
-    public Queue() {
+    public Queue3() {
         queue = new int[MAX];
-        head = 0;
-        tail = -1;
-        size = 0;
+        head = new AtomicInteger(0);
+        tail = new AtomicInteger(-1);
+        size = new AtomicInteger(0);
     }
 
     public boolean empty() {
-        return size == 0;
+        return size.get() == 0;
     }
 
-    public int getSize() {
+    public AtomicInteger getSize() {
         return size;
     }
 
@@ -24,16 +26,16 @@ public class Queue { // not thread safe
         if (empty()) {
             throw new IllegalStateException("Method peek: Queue is empty!");
         }
-        return queue[head];
+        return queue[head.get()];
     }
 
     public void offer(int nb) {
-        if (size == MAX) {
+        if (size.get() == MAX) {
             throw new IllegalStateException("Method offer: Queue is full!");
         }
-        tail = (tail + 1) % MAX;
-        size++;
-        queue[tail] = nb;
+        tail.set((tail.get() + 1) % MAX);
+        size.addAndGet(1);
+        queue[tail.get()] = nb;
     }
 
     public int poll() {
@@ -41,8 +43,8 @@ public class Queue { // not thread safe
             throw new IllegalStateException("Method poll: Queue is empty!");
         }
         int toRemove = peek();
-        head = (head + 1) % MAX;
-        size--;
+        head.set((head.get() + 1) % MAX);
+        size.addAndGet(-1);
         return toRemove;
     }
 
@@ -51,7 +53,7 @@ public class Queue { // not thread safe
             System.out.println("Queue is empty!");
         }
         for (int i = 0; i < MAX; i++) {
-            System.out.print(queue[(head + i) % MAX] + " ");
+            System.out.print(queue[(head.addAndGet(i)) % MAX] + " ");
         }
     }
 
@@ -73,7 +75,7 @@ public class Queue { // not thread safe
 
     public static void main(String[] args) throws InterruptedException {
         final int THREADS = 6; // decide the nb of threads
-        Queue q = new Queue();
+        Queue3 q = new Queue3();
 
         ConcurrentQueue[] threads = new ConcurrentQueue[THREADS];
         for (int i = 0; i < THREADS; i++) {
@@ -86,6 +88,6 @@ public class Queue { // not thread safe
             threads[i].join();
         }
 
-        System.out.println(q.size); // size should be always 6000 but it isn't!
+        System.out.println(q.size); // size is always 6000 as intended
     }
 }
